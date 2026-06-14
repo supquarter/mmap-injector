@@ -1,4 +1,4 @@
-# Manual Map Injector — Roblox Hyperion Bypass
+# Manual Map Injector For Roblox
 
 A high-performance x64 DLL injector for Roblox designed to bypass **Hyperion** (Roblox's anti-exploit / bypass system). Uses **manual mapping** to load modules into `RobloxPlayerBeta.exe` without touching `LoadLibrary`, leaving zero trace in the PEB module list.
 
