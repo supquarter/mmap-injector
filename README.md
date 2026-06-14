@@ -1,6 +1,6 @@
-# supQ — Manual Map Injector
+# Manual Map Injector
 
-**supQ** is a high-performance x64 Windows DLL injector that uses **manual mapping** (mmap) to load modules into target processes without touching `LoadLibrary`, leaving no trace in the PEB module list. Designed for stealth, reliability, and clean integration.
+A high-performance x64 Windows DLL injector that uses **manual mapping** (mmap) to load modules into target processes without touching `LoadLibrary`, leaving no trace in the PEB module list. Designed for stealth, reliability, and clean integration.
 
 ---
 
@@ -88,7 +88,7 @@ Run `injector.exe` — no arguments needed. A dark-theme window appears:
 │  [Inject]  [Execute]  [Clear]                   │
 │  ┌──────────────────────────────────────────┐   │
 │  │  -- Script editor                        │   │
-│  │  print("Hello from supQ!")               │   │
+│  │  print("Hello!")                          │   │
 │  │                                          │   │
 │  │                                          │   │
 │  └──────────────────────────────────────────┘   │
@@ -152,14 +152,4 @@ namespace ManualMap {
 
 Libraries linked: `Psapi.lib`, `comctl32.lib`
 
----
 
-## Branding
-
-This injector is part of the **supQ** ecosystem — a Roblox Luau executor platform. The DLL it injects (`supq.dll`) provides a full scripting environment with ~40+ APIs including closure hooks, drawing primitives, HTTP requests, WebSockets, file I/O, and debug introspection.
-
----
-
-## License
-
-Internal project. Not for public distribution or commercial use.
