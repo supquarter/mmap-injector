@@ -8,7 +8,7 @@ A high-performance x64 Windows DLL injector that uses **manual mapping** (mmap) 
 
 - **Manual Map Injection** — Fully resolves relocations, imports, and TLS callbacks. No `LoadLibrary` call in the target process.
 - **Win32 GUI** — Dark-themed interface with a script editor, Inject/Execute/Clear buttons, and a live status bar.
-- **Remote Script Execution** — After injection, sends Lua scripts to the target via a named pipe (`\\.\pipe\YuBX_Execute_<PID>`).
+- **Remote Script Execution** — After injection, sends Lua scripts to the target via a named pipe (`\\.\pipe\YourExecutor_<PID>`). Configurable — change `PIPE_NAME` in `ManualMap.cpp`.
 - **Anti-Detection** — Random jitter, memory cleanup with `SecureZeroMemory`, section-based page protection (no all-RWX), and no PEB artifacts.
 - **Self-Contained** — No external dependencies. Pure Win32 API. One executable, one DLL.
 
@@ -31,13 +31,13 @@ Target Process
     │
     └─ DllMain(DLL_PROCESS_ATTACH)
          │
-         └─ CreateNamedPipe(\\.\pipe\YuBX_Execute_<PID>)
+         └─ CreateNamedPipe(\\.\pipe\YourExecutor_<PID>)
               │
               └─ ReadFile() → script → TaskScheduler::ScheduleScript()
 
  User types script, clicks [Execute]
     │
-    └─ CreateFile(\\.\pipe\YuBX_Execute_<PID>)
+    └─ CreateFile(\\.\pipe\YourExecutor_<PID>)
          │
          └─ WriteFile(script) → DLL receives and runs it
 ```

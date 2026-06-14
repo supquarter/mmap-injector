@@ -8,6 +8,8 @@
 
 #pragma comment(lib, "psapi.lib")
 
+#define PIPE_NAME "YourExecutor"
+
 namespace
 {
     struct REMOTE_MODULE_INFO
@@ -289,7 +291,8 @@ namespace ManualMap
         path += '\\';
         path += "pipe";
         path += '\\';
-        path += "YuBX_Execute_";
+        path += PIPE_NAME;
+        path += '_';
         path += std::to_string(processId);
         return path;
     }
