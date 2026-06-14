@@ -1,6 +1,6 @@
-# Manual Map Injector
+# Manual Map Injector — Roblox
 
-A high-performance x64 Windows DLL injector that uses **manual mapping** (mmap) to load modules into target processes without touching `LoadLibrary`, leaving no trace in the PEB module list. Designed for stealth, reliability, and clean integration.
+A high-performance x64 Windows DLL injector for Roblox that uses **manual mapping** (mmap) to load modules into `RobloxPlayerBeta.exe` without touching `LoadLibrary`, leaving no trace in the PEB module list. Designed for stealth, reliability, and clean integration.
 
 ---
 
