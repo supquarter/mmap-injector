@@ -1,16 +1,29 @@
-# Manual Map Injector — Roblox
+# Manual Map Injector — Roblox Hyperion Bypass
 
-A high-performance x64 Windows DLL injector for Roblox that uses **manual mapping** (mmap) to load modules into `RobloxPlayerBeta.exe` without touching `LoadLibrary`, leaving no trace in the PEB module list. Designed for stealth, reliability, and clean integration.
+A high-performance x64 DLL injector for Roblox designed to bypass **Hyperion** (Roblox's anti-exploit / bypass system). Uses **manual mapping** to load modules into `RobloxPlayerBeta.exe` without touching `LoadLibrary`, leaving zero trace in the PEB module list.
+
+---
+
+## Hyperion Bypass
+
+| Hyperion Detection Vector | Bypass |
+|---------------------------|--------|
+| **PEB Module Walking** — Hyperion scans `InMemoryOrderModuleList` for unknown modules | Manual mapping skips `LdrLoadDll` entirely — the injected module never appears in the PEB |
+| **`LoadLibrary` Hooking** — Hyperion hooks `LdrLoadDll` / `LoadLibraryA/W` to detect injection | All imports are resolved manually via offset math (`target_base + (local_func - local_base)`) — no call to `LoadLibrary` in the target |
+| **RWX Memory Scan** — Hyperion flags memory pages with RWX permissions | Each section gets proper per-section protection (`PAGE_EXECUTE_READ`, `PAGE_READWRITE`, etc.) — never all-RWX |
+| **Timing Analysis** — Hyperion detects abnormal execution time from injection techniques | Random jitter (`Sleep(100–2000ms)`) at multiple stages to bypass timing heuristics |
+| **Memory Forensics** — Hyperion dumps and scans process memory for known DLL signatures | `SecureZeroMemory` wipes DLL data and local PE buffers after injection — no signature left in memory |
+| **Disk Artifacts** — Hyperion monitors `CreateFile` / IRP for DLL writes | Module is injected directly from memory — never touches disk in the target process |
 
 ---
 
 ## Features
 
-- **Manual Map Injection** — Fully resolves relocations, imports, and TLS callbacks. No `LoadLibrary` call in the target process.
-- **Win32 GUI** — Dark-themed interface with a script editor, Inject/Execute/Clear buttons, and a live status bar.
-- **Remote Script Execution** — After injection, sends Lua scripts to the target via a named pipe (`\\.\pipe\YourExecutor_<PID>`). Configurable — change `PIPE_NAME` in `ManualMap.cpp`.
-- **Anti-Detection** — Random jitter, memory cleanup with `SecureZeroMemory`, section-based page protection (no all-RWX), and no PEB artifacts.
-- **Self-Contained** — No external dependencies. Pure Win32 API. One executable, one DLL.
+- **Manual Map Injection** — Fully resolves relocations, imports, and TLS callbacks. No `LoadLibrary` call in the target.
+- **Win32 GUI** — Dark-themed interface with script editor, Inject/Execute/Clear buttons, and live status bar.
+- **Remote Script Execution** — Sends Lua scripts to the injected DLL via named pipe (`\\.\pipe\YourExecutor_<PID>`). Configurable — change `PIPE_NAME` in `ManualMap.cpp`.
+- **Anti-Detection** — Random jitter, `SecureZeroMemory`, section-based page protection, no PEB artifacts.
+- **Self-Contained** — Pure Win32 API. No external dependencies.
 
 ---
 
@@ -81,7 +94,7 @@ CreateRemoteThread(entryPoint, imageBase, DLL_PROCESS_ATTACH)
 
 ### GUI Mode (default)
 
-Run `injector.exe` — no arguments needed. A dark-theme window appears:
+Run `injector.exe` — no arguments needed:
 
 ```
 ┌────────────────────────────────────────────────┐
@@ -99,7 +112,7 @@ Run `injector.exe` — no arguments needed. A dark-theme window appears:
 | Button | Action |
 |--------|--------|
 | **Inject** | Manual maps the DLL into `RobloxPlayerBeta.exe` |
-| **Execute** | Sends the script contents to the injected DLL via named pipe |
+| **Execute** | Sends the script contents to the injected DLL |
 | **Clear** | Clears the script editor |
 
 ### CLI Mode
@@ -115,32 +128,12 @@ injector.exe -pid <pid> <dll_path>
 
 ```cpp
 namespace ManualMap {
-    // Inject a DLL from disk by path
     bool Inject(DWORD processId, const std::string& dllPath);
-
-    // Inject a DLL already loaded in memory
     bool InjectFromMemory(DWORD processId, const std::vector<uint8_t>& dllData);
-
-    // Find a process by executable name (case-insensitive)
     DWORD FindProcess(const std::string& name);
-
-    // Send a script to the target process's named pipe
     bool SendScript(DWORD processId, const std::string& script);
 }
 ```
-
----
-
-## Stealth & Anti-Detection
-
-| Technique | Implementation |
-|-----------|---------------|
-| **No PEB entry** | Manual mapping skips `LdrLoadDll` — module never appears in `InMemoryOrderModuleList` |
-| **No LoadLibrary** | Imports resolved via offset math: `target_base + (local_func − local_base)` |
-| **Random jitter** | `Sleep(100–2000ms)` at multiple stages to break timing analysis |
-| **Memory cleanup** | `SecureZeroMemory` on DLL data and local PE copy after injection |
-| **Section permissions** | Each section gets `PAGE_EXECUTE_READ`, `PAGE_READWRITE`, etc. — never all-RWX |
-| **No disk artifacts** | DLL never written to disk in the target process |
 
 ---
 
@@ -148,8 +141,6 @@ namespace ManualMap {
 
 - **Windows SDK** (10.0.x)
 - **Visual Studio 2022** (v143/v145 toolset)
-- **C++20** language standard
+- **C++20**
 
 Libraries linked: `Psapi.lib`, `comctl32.lib`
-
-
